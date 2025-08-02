@@ -4,6 +4,7 @@
 	import Hero from '$lib/components/B_Hero.svelte';
 	import CoreServices from '$lib/components/C_CoreServices.svelte';
 	import Testimonials from '$lib/components/D_Testimonials.svelte';
+	import ImpactSection from '$lib/components/G_ImpactSection.svelte';
 	import AboutUs from '$lib/components/E_AboutUs.svelte';
 	import SocialHandles from '$lib/components/F_SocialHandles.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -27,6 +28,9 @@
 
 <!-- Core Services Grid -->
 <CoreServices />
+
+<!-- Impact Section -->
+<ImpactSection />
 
 <!-- Testimonials Section -->
 <Testimonials />

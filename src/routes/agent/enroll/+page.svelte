@@ -7,17 +7,6 @@
 	let step = 1;
 	let formSubmitted = false;
 
-	// Form fields
-	let surname = '';
-	let firstName = '';
-	let otherName = '';
-	let email = '';
-	let phone = '';
-	let nin = '';
-	let state = '';
-	let lga = '';
-	let address = '';
-
 	let agentData = {
 		surname: '',
 		firstName: '',
@@ -78,96 +67,117 @@
 		}
 
 		if (step === 1) {
-			surname = surname.trim();
-			firstName = firstName.trim();
+			agentData.surname = agentData.surname.trim();
+			agentData.firstName = agentData.firstName.trim();
+			agentData.otherName = agentData.otherName.trim();
 
-			if (!surname) {
+			if (!agentData.surname) {
 				notifyError('Surname is required.');
 				return false;
-			} else if (!onlyLetters.test(surname)) {
+			} else if (!onlyLetters.test(agentData.surname)) {
 				notifyError('Surname must contain only letters.');
 				return false;
-			} else if (hasInternalWhitespace(surname)) {
+			} else if (hasInternalWhitespace(agentData.surname)) {
 				notifyError('Surname must not contain spaces between characters.');
 				return false;
 			}
 
-			if (!firstName) {
+			if (!agentData.firstName) {
 				notifyError('First name is required.');
 				return false;
-			} else if (!onlyLetters.test(firstName)) {
+			} else if (!onlyLetters.test(agentData.firstName)) {
 				notifyError('First name must contain only letters.');
 				return false;
-			} else if (hasInternalWhitespace(firstName)) {
+			} else if (hasInternalWhitespace(agentData.firstName)) {
 				notifyError('First name must not contain spaces between characters.');
 				return false;
+			}
+			if (agentData.otherName) {
+				const trimmed = agentData.otherName.trim();
+
+				if (!onlyLetters.test(trimmed)) {
+					notifyError('Other name must contain only letters.');
+					return false;
+				}
+
+				if (hasInternalWhitespace(trimmed)) {
+					notifyError('Other name must not contain spaces between characters.');
+					return false;
+				}
+
+				agentData.otherName = trimmed; // optional, to clean the value
 			}
 		}
 
 		if (step === 2) {
-			email = email.trim();
-			phone = phone.trim();
+			agentData.email = agentData.email.trim();
+			agentData.phone = agentData.phone.trim();
 
-			if (!email) {
+			if (!agentData.email) {
 				notifyError('Email is required.');
 				return false;
-			} else if (!emailPattern.test(email)) {
+			} else if (!emailPattern.test(agentData.email)) {
 				notifyError('Invalid email format.');
 				return false;
-			} else if (hasInternalWhitespace(email)) {
+			} else if (hasInternalWhitespace(agentData.email)) {
 				notifyError('Email must not contain spaces between characters.');
 				return false;
 			}
 
-			if (!phone) {
+			if (!agentData.phone) {
 				notifyError('Phone number is required.');
 				return false;
-			} else if (!phonePattern.test(phone)) {
+			} else if (!phonePattern.test(agentData.phone)) {
 				notifyError('Phone must be 10–15 digits.');
 				return false;
-			} else if (hasInternalWhitespace(phone)) {
+			} else if (hasInternalWhitespace(agentData.phone)) {
 				notifyError('Phone number must not contain spaces between characters.');
 				return false;
 			}
 		}
 
 		if (step === 3) {
-			nin = nin.trim();
+			agentData.nin = agentData.nin.trim();
 
-			if (!nin) {
+			if (!agentData.nin) {
 				notifyError('NIN is required.');
 				return false;
-			} else if (!ninPattern.test(nin)) {
+			} else if (!ninPattern.test(agentData.nin)) {
 				notifyError('NIN must be exactly 11 digits.');
 				return false;
-			} else if (hasInternalWhitespace(nin)) {
+			} else if (hasInternalWhitespace(agentData.nin)) {
 				notifyError('NIN must not contain spaces between characters.');
 				return false;
 			}
 		}
 
 		if (step === 4) {
-			address = address.trim();
+			agentData.address = agentData.address.trim();
 
-			if (!state) {
+			if (!agentData.state) {
 				notifyError('State is required.');
 				return false;
 			}
-			if (!lga) {
+			if (!agentData.lga) {
 				notifyError('LGA is required.');
 				return false;
 			}
-			if (!address) {
+			if (!agentData.address) {
 				notifyError('Address is required.');
 				return false;
 			}
 
-			if (/[^a-zA-Z0-9\s,.-]/.test(address)) {
+			if (/[^a-zA-Z0-9\s,.\-\/#]/.test(agentData.address)) {
 				notifyError('Address must not contain special characters.');
 				return false;
 			}
-			if (address.length < 10) {
+			if (agentData.address.length < 10 && agentData.address.length > 0) {
+				// Only check length if address is not empty
 				notifyError('Address must be at least 10 characters long.');
+				return false;
+			}
+			if (agentData.address.length > 200) {
+				notifyError('Address must not exceed 200 characters.');
 				return false;
 			}
 		}
@@ -197,13 +207,14 @@
 			const result = await response.json();
 
 			if (!response.ok) {
-				throw new Error(result?.error || 'Unknown error occurred.');
+				notifyError(result?.error || 'Unknown error occurred.');
 			}
 
-			notifySuccess('✅ Agent onboarded successfully!');
+			notifySuccess('Agent onboarded successfully!');
 			// Optional: Reset form or redirect
 			agentData = { ...initialData }; // if you defined initialData
 			// goto('/dashboard'); // or any other route
+			window.location.reload();
 		} catch (error) {
 			console.error('Submission failed:', error);
 			const message = error instanceof Error ? error.message : String(error);
@@ -253,10 +264,10 @@
 	}
 
 	onMount(loadStates);
-	$: if (state && state !== previousState) {
-		previousState = state;
+	$: if (agentData.state && agentData.state !== previousState) {
+		previousState = agentData.state;
 		cities = [];
-		fetchCities(state);
+		fetchCities(agentData.state);
 	}
 </script>
 
@@ -270,164 +281,166 @@
 		</p>
 	</div>
 
-	{#if formSubmitted}
-		<div
-			class="rounded-lg border border-green-200 bg-green-50 p-6 text-center text-green-800 shadow"
-		></div>
-	{:else}
-		<form class="space-y-6 rounded-xl bg-white p-6 shadow-md" on:submit|preventDefault={submitForm}>
-			<!-- Step 1: Personal Info -->
-			{#if step === 1}
-				<div>
-					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 1: Personal Information</h2>
-					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<div>
-							<input
-								type="text"
-								bind:value={agentData.surname}
-								placeholder="Surname"
-								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
-							/>
-						</div>
-						<div>
-							<input
-								type="text"
-								bind:value={agentData.firstName}
-								placeholder="First Name"
-								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
-							/>
-						</div>
+	<form class="space-y-6 rounded-xl bg-white p-6 shadow-md" on:submit|preventDefault={submitForm}>
+		<!-- Step 1: Personal Info -->
+		{#if step === 1}
+			<div>
+				<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 1: Personal Information</h2>
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					<div>
 						<input
 							type="text"
-							bind:value={agentData.otherName}
-							placeholder="Other Name (Optional)"
+							bind:value={agentData.surname}
+							placeholder="Surname"
 							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 						/>
 					</div>
-				</div>
-			{/if}
-
-			<!-- Step 2: Contact Info -->
-			{#if step === 2}
-				<div>
-					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 2: Contact Information</h2>
-					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<div>
-							<input
-								type="email"
-								bind:value={agentData.email}
-								placeholder="e-Mail Address"
-								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
-							/>
-						</div>
-						<div>
-							<input
-								type="tel"
-								bind:value={agentData.phone}
-								maxlength="11"
-								minlength="11"
-								placeholder="e.g. 08012345678"
-								pattern="[0-9]{11}"
-								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
-							/>
-						</div>
+					<div>
+						<input
+							type="text"
+							bind:value={agentData.firstName}
+							placeholder="First Name"
+							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+						/>
 					</div>
+					<input
+						type="text"
+						bind:value={agentData.otherName}
+						placeholder="Other Name (Optional)"
+						class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+					/>
 				</div>
-			{/if}
+			</div>
+		{/if}
 
-			<!-- Step 3: Identification -->
-			{#if step === 3}
-				<div>
-					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 3: Identification</h2>
+		<!-- Step 2: Contact Info -->
+		{#if step === 2}
+			<div>
+				<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 2: Contact Information</h2>
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					<div>
+						<input
+							type="email"
+							bind:value={agentData.email}
+							placeholder="e-Mail Address"
+							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+						/>
+					</div>
 					<div>
 						<input
 							type="tel"
-							bind:value={agentData.nin}
+							bind:value={agentData.phone}
 							maxlength="11"
 							minlength="11"
-							placeholder="National Identification Number (NIN)"
+							placeholder="e.g. 08012345678"
 							pattern="[0-9]{11}"
 							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 						/>
 					</div>
 				</div>
-			{/if}
+			</div>
+		{/if}
 
-			<!-- Step 4: Location & Verification -->
-			{#if step === 4}
+		<!-- Step 3: Identification -->
+		{#if step === 3}
+			<div>
+				<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 3: Identification</h2>
 				<div>
-					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 4: Location & Verification</h2>
-					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<div>
-							<select
-								bind:value={agentData.state}
-								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
-								disabled={stateLoading}
-							>
-								<option value="">Select State *</option>
-								{#each states as s}
-									<option value={s}>{s}</option>
-								{/each}
-							</select>
-						</div>
-						<div>
-							<select
-								bind:value={agentData.lga}
-								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
-								disabled={cityLoading || !cities.length}
-							>
-								<option value="">Select LGA *</option>
-								{#each cities as c}
-									<option value={c}>{c}</option>
-								{/each}
-							</select>
-						</div>
-					</div>
+					<input
+						type="tel"
+						bind:value={agentData.nin}
+						maxlength="11"
+						minlength="11"
+						placeholder="National Identification Number (NIN)"
+						pattern="[0-9]{11}"
+						class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+					/>
+				</div>
+			</div>
+		{/if}
 
-					<div class="mt-4">
-						<textarea
-							bind:value={agentData.address}
-							placeholder="Full Address *"
-							class="input min-h-[100px] w-full"
-						></textarea>
+		<!-- Step 4: Location & Verification -->
+		{#if step === 4}
+			<div>
+				<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 4: Location & Verification</h2>
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+					<div>
+						<select
+							bind:value={agentData.state}
+							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+							disabled={stateLoading}
+						>
+							<option value="">Select State *</option>
+							{#each states as s}
+								<option value={s}>{s}</option>
+							{/each}
+						</select>
 					</div>
-
-					<div class="mt-4">
-						<p class="text-sm text-gray-600">
-							By submitting this form, you agree to our{' '}
-							<a href="/terms" class="text-[#008751] hover:underline">Terms of Service</a> and{' '}
-							<a href="/privacy" class="text-[#008751] hover:underline">Privacy Policy</a>.
-						</p>
+					<div>
+						<select
+							bind:value={agentData.lga}
+							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+							disabled={cityLoading || !cities.length}
+						>
+							<option value="">Select LGA *</option>
+							{#each cities as c}
+								<option value={c}>{c}</option>
+							{/each}
+						</select>
 					</div>
 				</div>
-			{/if}
 
-			<!-- Navigation Buttons -->
-			<div class="flex justify-between pt-6">
-				{#if step > 1}
-					<button type="button" on:click={prevStep} class="text-[#008751] hover:underline">
-						← Back
-					</button>
-				{/if}
-				{#if step < 4}
-					<button
-						type="button"
-						on:click={nextStep}
-						class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
-					>
-						Next →
-					</button>
-				{:else}
-					<button
-						type="submit"
-						class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
-					>
-						Submit
-					</button>
-				{/if}
+				<div class="mt-4">
+					<textarea
+						bind:value={agentData.address}
+						placeholder="Full Address *"
+						class="input min-h-[100px] w-full"
+					></textarea>
+				</div>
+
+				<div class="mt-4">
+					<p class="text-sm text-gray-600">
+						By submitting this form, you agree to our{' '}
+						<a href="/terms" class="text-[#008751] hover:underline">Terms of Service</a> and{' '}
+						<a href="/privacy" class="text-[#008751] hover:underline">Privacy Policy</a>.
+					</p>
+				</div>
 			</div>
-		</form>
-	{/if}
+		{/if}
+
+		<!-- Navigation Buttons -->
+		<div class="flex justify-between pt-6">
+			{#if step > 1}
+				<button type="button" on:click={prevStep} class="text-[#008751] hover:underline">
+					← Back
+				</button>
+			{/if}
+			{#if step < 4}
+				<button
+					type="button"
+					on:click={nextStep}
+					class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
+				>
+					Next →
+				</button>
+			{:else}
+				<button
+					type="submit"
+					disabled={formSubmitted}
+					class="flex items-center gap-2 rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
+				>
+					{#if formSubmitted}
+						<span
+							class="loader h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+						></span>
+						Submitting...
+					{:else}
+						Submit
+					{/if}
+				</button>
+			{/if}
+		</div>
+	</form>
 </div>
 
 <Footer />

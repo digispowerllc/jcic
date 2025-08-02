@@ -1,0 +1,31 @@
+// File: src/routes/captcha/puzzle/+page.svelte
+
+<script lang="ts">
+  import { onMount } from 'svelte';
+  let offset = 0;
+  let guess = 0;
+  let verified = false;
+  let image = '/captcha-assets/bg1.jpg';
+
+  onMount(() => {
+    offset = Math.floor(Math.random() * 150) + 30;
+  });
+
+  function verify() {
+    if (Math.abs(guess - offset) < 6) verified = true;
+  }
+</script>
+
+<div class="w-full max-w-md p-4 bg-white rounded shadow">
+  <div class="relative w-80 h-40 mb-4">
+    <img src={image} alt="Puzzle Background" class="w-full h-full object-cover" />
+    <div class="absolute top-0 left-0 h-full border-l-4 border-blue-600" style="left: {guess}px"></div>
+  </div>
+
+  <input type="range" min="0" max="280" bind:value={guess} class="w-full" />
+  <button on:click={verify} class="mt-2 px-4 py-2 bg-blue-600 text-white rounded">Verify</button>
+
+  {#if verified}
+    <p class="mt-3 text-green-600">Verified ✅</p>
+  {/if}
+</div>

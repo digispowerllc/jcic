@@ -2,8 +2,7 @@
 	import Navigation from '$lib/components/A_Navigation.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
-		import { notifySuccess, notifyError } from '$lib/store/notification';
-
+	import { notifySuccess, notifyError } from '$lib/store/notification';
 
 	let step = 1;
 	let formSubmitted = false;
@@ -221,14 +220,12 @@
 		cities = [];
 		fetchCities(state);
 	}
-	
 </script>
 
 <Navigation />
 
-
 <div class="mx-auto max-w-3xl px-4 py-10">
-	<div class="mb-10 mt-10 text-center">
+	<div class="mt-10 mb-10 text-center">
 		<h1 class="text-3xl font-bold text-[#008751]">Agent Onboarding</h1>
 		<p class="mt-2 text-sm text-gray-600 sm:text-base">
 			Complete the steps below to begin your onboarding process.

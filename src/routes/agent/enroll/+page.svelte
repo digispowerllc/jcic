@@ -3,8 +3,6 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
 	import { notifySuccess, notifyError } from '$lib/store/notification';
-	import SliderCaptcha from '$lib/components/Forms/SliderCaptcha.svelte';
-	import PuzzleCaptcha from '$lib/components/Forms/PuzzleCaptcha.svelte';
 
 	let step = 1;
 	let formSubmitted = false;
@@ -20,11 +18,7 @@
 	let lga = '';
 	let address = '';
 
-	// Captcha
-	let captchaSolved = false;
-	let usePuzzle = Math.random() > 0.5;
-
-	// Validation errors
+		// Validation errors
 	let errors: Record<string, string> = {};
 
 	// State/LGA logic
@@ -34,10 +28,6 @@
 	let cityLoading = false;
 	let previousState = '';
 	const lgaCache = new Map<string, string[]>();
-
-	function handleCaptchaSolved() {
-		captchaSolved = true;
-	}
 
 	function handleBlur(event: FocusEvent) {
 		const input = event.target as HTMLInputElement | HTMLTextAreaElement;
@@ -58,6 +48,7 @@
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		const phonePattern = /^\d{10,15}$/;
 		const ninPattern = /^\d{11}$/;
+	
 
 		function hasInternalWhitespace(str: string): boolean {
 			const trimmed = str.trim();
@@ -149,12 +140,15 @@
 				return false;
 			}
 
-			if (!captchaSolved) {
-				notifyError('Captcha verification required.');
+					if (/[^a-zA-Z0-9\s,.-]/.test(address)) {
+				notifyError('Address must not contain special characters.');
+				return false;
+			}
+			if (address.length < 10) {
+				notifyError('Address must be at least 10 characters long.');
 				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -218,7 +212,6 @@
 		fetchCities(state);
 	}
 </script>
-
 
 <Navigation />
 
@@ -356,26 +349,13 @@
 						{/if}
 					</div>
 
-					<!-- Captcha -->
-					<!-- Inserted CAPTCHA under Step 4 -->
-<!-- replace the existing math captcha block -->
-{#if step === 4}
-  <div class="mt-4">
-    <h3 class="mb-2 font-medium text-gray-700">Verify you're not a bot:</h3>
-    {#if usePuzzle}
-      <PuzzleCaptcha on:solved={handleCaptchaSolved} />
-    {:else}
-      <SliderCaptcha on:solved={handleCaptchaSolved} />
-    {/if}
-  </div>
-{/if}
-
-					{#if !captchaSolved}
-						<p class="mt-2 text-sm text-gray-500">
-							Please complete the CAPTCHA to verify you're not a bot.
+					<div class="mt-4">
+						<p class="text-sm text-gray-600">
+							By submitting this form, you agree to our{' '}
+							<a href="/terms" class="text-[#008751] hover:underline">Terms of Service</a> and{' '}
+							<a href="/privacy" class="text-[#008751] hover:underline">Privacy Policy</a>.
 						</p>
-					{/if}
-					
+					</div>
 				</div>
 			{/if}
 

@@ -1,10 +1,25 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import * as schema from './schema';
-import { env } from '$env/dynamic/private';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
+import fs from 'fs';
+import path from 'path';
 
-if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
+// Read the CA certificate
+if (!process.env.SSL_CERTIFICATE) {
+    throw new Error('Environment variable SSL_CERTIFICATE is not defined');
+}
 
-const client = postgres(env.DATABASE_URL);
+const caCert = fs.readFileSync(path.resolve(process.env.SSL_CERTIFICATE)).toString();
 
-export const db = drizzle(client, { schema });
+const pool = new Pool({
+    host: process.env.HOST,
+    port: Number(process.env.PORT),
+    database: process.env.DATABASE_NAME,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    ssl: {
+        ca: caCert,
+        rejectUnauthorized: true // ensure only trusted certs are accepted
+    }
+});
+
+export const db = drizzle(pool);

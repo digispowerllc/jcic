@@ -2,14 +2,17 @@
 	let navOpen = false;
 </script>
 
-<nav class="sticky top-0 z-50 border-b bg-white shadow-sm">
+<nav class="sticky top-0 z-50 bg-white shadow-sm">
 	<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-		<a href="/" class="text-2xl font-bold text-green-800 hover:underline"> Jubilee Care ICT </a>
+		<a href="/" class="text-2xl font-bold text-green-800 hover:text-green-700">
+			Jubilee Care
+			<span class="text-green-600">.NG</span>
+		</a>
 		<div class="hidden space-x-8 md:flex">
-			<a href="#about" class="font-medium hover:text-green-700">About</a>
-			<a href="#services" class="font-medium hover:text-green-700">Services</a>
-			<a href="#projects" class="font-medium hover:text-green-700">Projects</a>
-			<a href="#contact" class="font-medium hover:text-green-700">Contact</a>
+			<a href="#about" class="font-medium hover:bg-green-700">About</a>
+			<a href="#services" class="font-medium hover:bg-green-700">Services</a>
+			<a href="#projects" class="font-medium hover:bg-green-700">Projects</a>
+			<a href="/contact" class="font-medium hover:bg-green-700">Contact</a>
 		</div>
 		<button
 			class="md:hidden"
@@ -31,7 +34,7 @@
 			<a href="#about" class="block text-green-700">About</a>
 			<a href="#services" class="block text-green-700">Services</a>
 			<a href="#projects" class="block text-green-700">Projects</a>
-			<a href="#contact" class="block text-green-700">Contact</a>
+			<a href="/contact" class="block text-green-700">Contact</a>
 		</div>
 	{/if}
 </nav>

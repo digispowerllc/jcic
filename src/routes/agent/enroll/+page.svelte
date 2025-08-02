@@ -18,7 +18,7 @@
 	let lga = '';
 	let address = '';
 
-		// Validation errors
+	// Validation errors
 	let errors: Record<string, string> = {};
 
 	// State/LGA logic
@@ -48,7 +48,6 @@
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		const phonePattern = /^\d{10,15}$/;
 		const ninPattern = /^\d{11}$/;
-	
 
 		function hasInternalWhitespace(str: string): boolean {
 			const trimmed = str.trim();
@@ -140,7 +139,7 @@
 				return false;
 			}
 
-					if (/[^a-zA-Z0-9\s,.-]/.test(address)) {
+			if (/[^a-zA-Z0-9\s,.-]/.test(address)) {
 				notifyError('Address must not contain special characters.');
 				return false;
 			}
@@ -238,22 +237,26 @@
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 1: Personal Information</h2>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
-							<input type="text" bind:value={surname} placeholder="Surname" class="input" />
-							{#if errors.surname}
-								<p class="mt-1 text-sm text-red-600">{errors.surname}</p>
-							{/if}
+							<input
+								type="text"
+								bind:value={surname}
+								placeholder="Surname"
+								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+							/>
 						</div>
 						<div>
-							<input type="text" bind:value={firstName} placeholder="First Name" class="input" />
-							{#if errors.firstName}
-								<p class="mt-1 text-sm text-red-600">{errors.firstName}</p>
-							{/if}
+							<input
+								type="text"
+								bind:value={firstName}
+								placeholder="First Name"
+								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+							/>
 						</div>
 						<input
 							type="text"
 							bind:value={otherName}
 							placeholder="Other Name (Optional)"
-							class="input"
+							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 						/>
 					</div>
 				</div>
@@ -265,10 +268,12 @@
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 2: Contact Information</h2>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
-							<input type="email" bind:value={email} placeholder="e-Mail Address)" class="input" />
-							{#if errors.email}
-								<p class="mt-1 text-sm text-red-600">{errors.email}</p>
-							{/if}
+							<input
+								type="email"
+								bind:value={email}
+								placeholder="e-Mail Address"
+								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+							/>
 						</div>
 						<div>
 							<input
@@ -278,11 +283,8 @@
 								minlength="11"
 								placeholder="e.g. 08012345678"
 								pattern="[0-9]{11}"
-								class="input"
+								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 							/>
-							{#if errors.phone}
-								<p class="mt-1 text-sm text-red-600">{errors.phone}</p>
-							{/if}
 						</div>
 					</div>
 				</div>
@@ -300,11 +302,8 @@
 							minlength="11"
 							placeholder="National Identification Number (NIN)"
 							pattern="[0-9]{11}"
-							class="input"
+							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 						/>
-						{#if errors.nin}
-							<p class="mt-1 text-sm text-red-600">{errors.nin}</p>
-						{/if}
 					</div>
 				</div>
 			{/if}
@@ -315,26 +314,28 @@
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 4: Location & Verification</h2>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
-							<select bind:value={state} class="input" disabled={stateLoading}>
+							<select
+								bind:value={state}
+								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+								disabled={stateLoading}
+							>
 								<option value="">Select State *</option>
 								{#each states as s}
 									<option value={s}>{s}</option>
 								{/each}
 							</select>
-							{#if errors.state}
-								<p class="mt-1 text-sm text-red-600">{errors.state}</p>
-							{/if}
 						</div>
 						<div>
-							<select bind:value={lga} class="input" disabled={cityLoading || !cities.length}>
+							<select
+								bind:value={lga}
+								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
+								disabled={cityLoading || !cities.length}
+							>
 								<option value="">Select LGA *</option>
 								{#each cities as c}
 									<option value={c}>{c}</option>
 								{/each}
 							</select>
-							{#if errors.lga}
-								<p class="mt-1 text-sm text-red-600">{errors.lga}</p>
-							{/if}
 						</div>
 					</div>
 
@@ -344,9 +345,6 @@
 							placeholder="Full Address *"
 							class="input min-h-[100px] w-full"
 						></textarea>
-						{#if errors.address}
-							<p class="mt-1 text-sm text-red-600">{errors.address}</p>
-						{/if}
 					</div>
 
 					<div class="mt-4">
@@ -390,28 +388,4 @@
 <Footer />
 
 <style>
-	input,
-	select,
-	textarea {
-		border: 1px solid #d1d5db;
-		border-radius: 0.375rem;
-		padding: 0.5rem;
-		font-size: 1rem;
-		width: 100%;
-	}
-
-	.input {
-		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-		transition: border-color 0.2s ease-in-out;
-	}
-
-	.input:focus {
-		border-color: #008751;
-		outline: none;
-	}
-
-	button {
-		font-size: 1rem;
-		font-weight: 600;
-	}
 </style>

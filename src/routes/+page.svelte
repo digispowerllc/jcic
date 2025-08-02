@@ -3,32 +3,32 @@
 
 	const services = [
 		{
-			icon: '🆔',
+			icon: '',
 			title: 'NIN Enrollment',
 			desc: 'Register your National ID with ease.'
 		},
 		{
-			icon: '✍️',
+			icon: '',
 			title: 'NIN Modification',
 			desc: 'Update and validate your NIN data securely.'
 		},
 		{
-			icon: '💻',
+			icon: '',
 			title: 'ICT Training',
 			desc: 'Get certified in essential tech skills.'
 		},
 		{
-			icon: '🔒',
+			icon: '',
 			title: 'Biometric Solutions',
 			desc: 'Secure identity capture and verification.'
 		},
 		{
-			icon: '🖨️',
+			icon: '',
 			title: 'NIN Slip Printing',
 			desc: 'Reprint your NIN slip quickly and safely.'
 		},
 		{
-			icon: '🧠',
+			icon: '',
 			title: 'ICT Consultancy',
 			desc: 'Build and manage ICT systems for institutions.'
 		}

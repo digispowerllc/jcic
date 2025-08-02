@@ -18,6 +18,29 @@
 	let lga = '';
 	let address = '';
 
+	let agentData = {
+		surname: '',
+		firstName: '',
+		otherName: '',
+		email: '',
+		phone: '',
+		nin: '',
+		state: '',
+		lga: '',
+		address: ''
+	};
+
+	const initialData = {
+		surname: '',
+		firstName: '',
+		otherName: '',
+		email: '',
+		phone: '',
+		nin: '',
+		state: '',
+		lga: '',
+		address: ''
+	};
 	// Validation errors
 	let errors: Record<string, string> = {};
 
@@ -159,10 +182,35 @@
 		if (step > 1) step--;
 	}
 
-	function submitForm() {
+	async function submitForm() {
 		if (!validateStep()) return;
+
 		formSubmitted = true;
-		notifySuccess('✅ Form submitted successfully!');
+
+		try {
+			const response = await fetch('/agent/enroll', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(agentData)
+			});
+
+			const result = await response.json();
+
+			if (!response.ok) {
+				throw new Error(result?.error || 'Unknown error occurred.');
+			}
+
+			notifySuccess('✅ Agent onboarded successfully!');
+			// Optional: Reset form or redirect
+			agentData = { ...initialData }; // if you defined initialData
+			// goto('/dashboard'); // or any other route
+		} catch (error) {
+			console.error('Submission failed:', error);
+			const message = error instanceof Error ? error.message : String(error);
+			notifyError(`❌ ${message}`);
+		} finally {
+			formSubmitted = false;
+		}
 	}
 
 	async function loadStates() {
@@ -225,10 +273,7 @@
 	{#if formSubmitted}
 		<div
 			class="rounded-lg border border-green-200 bg-green-50 p-6 text-center text-green-800 shadow"
-		>
-			<h2 class="text-lg font-semibold">✅ Success</h2>
-			<p>Your onboarding request has been received. We’ll be in touch shortly.</p>
-		</div>
+		></div>
 	{:else}
 		<form class="space-y-6 rounded-xl bg-white p-6 shadow-md" on:submit|preventDefault={submitForm}>
 			<!-- Step 1: Personal Info -->

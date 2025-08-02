@@ -284,7 +284,7 @@
 						<div>
 							<input
 								type="text"
-								bind:value={surname}
+								bind:value={agentData.surname}
 								placeholder="Surname"
 								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 							/>
@@ -292,14 +292,14 @@
 						<div>
 							<input
 								type="text"
-								bind:value={firstName}
+								bind:value={agentData.firstName}
 								placeholder="First Name"
 								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 							/>
 						</div>
 						<input
 							type="text"
-							bind:value={otherName}
+							bind:value={agentData.otherName}
 							placeholder="Other Name (Optional)"
 							class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 						/>
@@ -315,7 +315,7 @@
 						<div>
 							<input
 								type="email"
-								bind:value={email}
+								bind:value={agentData.email}
 								placeholder="e-Mail Address"
 								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 							/>
@@ -323,7 +323,7 @@
 						<div>
 							<input
 								type="tel"
-								bind:value={phone}
+								bind:value={agentData.phone}
 								maxlength="11"
 								minlength="11"
 								placeholder="e.g. 08012345678"
@@ -342,7 +342,7 @@
 					<div>
 						<input
 							type="tel"
-							bind:value={nin}
+							bind:value={agentData.nin}
 							maxlength="11"
 							minlength="11"
 							placeholder="National Identification Number (NIN)"
@@ -360,7 +360,7 @@
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div>
 							<select
-								bind:value={state}
+								bind:value={agentData.state}
 								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 								disabled={stateLoading}
 							>
@@ -372,7 +372,7 @@
 						</div>
 						<div>
 							<select
-								bind:value={lga}
+								bind:value={agentData.lga}
 								class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-green-600 focus:ring-green-600"
 								disabled={cityLoading || !cities.length}
 							>
@@ -386,7 +386,7 @@
 
 					<div class="mt-4">
 						<textarea
-							bind:value={address}
+							bind:value={agentData.address}
 							placeholder="Full Address *"
 							class="input min-h-[100px] w-full"
 						></textarea>

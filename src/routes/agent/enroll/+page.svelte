@@ -3,6 +3,8 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
 	import { notifySuccess, notifyError } from '$lib/store/notification';
+	import SliderCaptcha from '$lib/components/Forms/SliderCapt.svelte';
+	import PuzzleCaptcha from '$lib/components/Forms/PuzzleCapt.svelte';
 
 	let step = 1;
 	let formSubmitted = false;
@@ -19,10 +21,8 @@
 	let address = '';
 
 	// Captcha
-	let num1 = Math.floor(Math.random() * 10) + 1;
-	let num2 = Math.floor(Math.random() * 10) + 1;
-	let captchaAnswer = '';
-	let captchaCorrect = false;
+	let captchaSolved = false;
+	let usePuzzle = Math.random() > 0.5;
 
 	// Validation errors
 	let errors: Record<string, string> = {};
@@ -35,10 +35,8 @@
 	let previousState = '';
 	const lgaCache = new Map<string, string[]>();
 
-	function verifyCaptcha() {
-		const expected = num1 + num2;
-		const userAnswer = parseInt(captchaAnswer.trim());
-		captchaCorrect = !isNaN(userAnswer) && userAnswer === expected;
+	function handleCaptchaSolved() {
+		captchaSolved = true;
 	}
 
 	function handleBlur(event: FocusEvent) {
@@ -151,9 +149,8 @@
 				return false;
 			}
 
-			verifyCaptcha();
-			if (!captchaCorrect) {
-				notifyError('Incorrect captcha answer.');
+			if (!captchaSolved) {
+				notifyError('Captcha verification required.');
 				return false;
 			}
 		}
@@ -221,6 +218,7 @@
 		fetchCities(state);
 	}
 </script>
+
 
 <Navigation />
 
@@ -359,22 +357,25 @@
 					</div>
 
 					<!-- Captcha -->
-					<div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-						<label for="captcha-input" class="mb-1 text-sm font-medium text-gray-700 sm:mb-0">
-							Verify you're not a bot:
-						</label>
-						<span class="text-lg font-semibold text-[#008751]">{num1} + {num2} =</span>
-						<input
-							id="captcha-input"
-							type="text"
-							bind:value={captchaAnswer}
-							placeholder="?"
-							class="input w-24"
-						/>
-					</div>
-					{#if errors.captcha}
-						<p class="mt-1 text-sm text-red-600">{errors.captcha}</p>
+					<!-- Inserted CAPTCHA under Step 4 -->
+<!-- replace the existing math captcha block -->
+{#if step === 4}
+  <div class="mt-4">
+    <h3 class="mb-2 font-medium text-gray-700">Verify you're not a bot:</h3>
+    {#if usePuzzle}
+      <PuzzleCaptcha on:solved={handleCaptchaSolved} />
+    {:else}
+      <SliderCaptcha on:solved={handleCaptchaSolved} />
+    {/if}
+  </div>
+{/if}
+
+					{#if !captchaSolved}
+						<p class="mt-2 text-sm text-gray-500">
+							Please complete the CAPTCHA to verify you're not a bot.
+						</p>
 					{/if}
+					
 				</div>
 			{/if}
 

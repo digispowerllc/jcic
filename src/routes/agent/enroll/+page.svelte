@@ -2,6 +2,7 @@
 	import Navigation from '$lib/components/A_Navigation.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
+	import { notifySuccess, notifyError } from '$lib/store/notification';
 
 	let step = 1;
 	let formSubmitted = false;
@@ -23,6 +24,9 @@
 	let captchaAnswer = '';
 	let captchaCorrect = false;
 
+	// Validation errors
+	let errors: Record<string, string> = {};
+
 	// State/LGA logic
 	let states: string[] = [];
 	let cities: string[] = [];
@@ -34,17 +38,131 @@
 	function verifyCaptcha() {
 		const expected = num1 + num2;
 		const userAnswer = parseInt(captchaAnswer.trim());
-
-		// Check if userAnswer is a valid number and matches expected
 		captchaCorrect = !isNaN(userAnswer) && userAnswer === expected;
 	}
 
+	function handleBlur(event: FocusEvent) {
+		const input = event.target as HTMLInputElement | HTMLTextAreaElement;
+		let val = input.value;
+		if (val.trim() === '') return;
+		const trimmed = val.trim();
+		if (/\s/.test(trimmed.slice(1, -1))) {
+			input.value = val; // invalid due to inner space, restore original
+		} else {
+			input.value = trimmed;
+		}
+	}
+
+	function validateStep(): boolean {
+		errors = {};
+
+		const onlyLetters = /^[A-Za-z]+$/;
+		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const phonePattern = /^\d{10,15}$/;
+		const ninPattern = /^\d{11}$/;
+
+		function hasInternalWhitespace(str: string): boolean {
+			const trimmed = str.trim();
+			return /\s/.test(trimmed.slice(1, -1));
+		}
+
+		if (step === 1) {
+			surname = surname.trim();
+			firstName = firstName.trim();
+
+			if (!surname) {
+				notifyError('Surname is required.');
+				return false;
+			} else if (!onlyLetters.test(surname)) {
+				notifyError('Surname must contain only letters.');
+				return false;
+			} else if (hasInternalWhitespace(surname)) {
+				notifyError('Surname must not contain spaces between characters.');
+				return false;
+			}
+
+			if (!firstName) {
+				notifyError('First name is required.');
+				return false;
+			} else if (!onlyLetters.test(firstName)) {
+				notifyError('First name must contain only letters.');
+				return false;
+			} else if (hasInternalWhitespace(firstName)) {
+				notifyError('First name must not contain spaces between characters.');
+				return false;
+			}
+		}
+
+		if (step === 2) {
+			email = email.trim();
+			phone = phone.trim();
+
+			if (!email) {
+				notifyError('Email is required.');
+				return false;
+			} else if (!emailPattern.test(email)) {
+				notifyError('Invalid email format.');
+				return false;
+			} else if (hasInternalWhitespace(email)) {
+				notifyError('Email must not contain spaces between characters.');
+				return false;
+			}
+
+			if (!phone) {
+				notifyError('Phone number is required.');
+				return false;
+			} else if (!phonePattern.test(phone)) {
+				notifyError('Phone must be 10–15 digits.');
+				return false;
+			} else if (hasInternalWhitespace(phone)) {
+				notifyError('Phone number must not contain spaces between characters.');
+				return false;
+			}
+		}
+
+		if (step === 3) {
+			nin = nin.trim();
+
+			if (!nin) {
+				notifyError('NIN is required.');
+				return false;
+			} else if (!ninPattern.test(nin)) {
+				notifyError('NIN must be exactly 11 digits.');
+				return false;
+			} else if (hasInternalWhitespace(nin)) {
+				notifyError('NIN must not contain spaces between characters.');
+				return false;
+			}
+		}
+
+		if (step === 4) {
+			address = address.trim();
+
+			if (!state) {
+				notifyError('State is required.');
+				return false;
+			}
+			if (!lga) {
+				notifyError('LGA is required.');
+				return false;
+			}
+			if (!address) {
+				notifyError('Address is required.');
+				return false;
+			}
+
+			verifyCaptcha();
+			if (!captchaCorrect) {
+				notifyError('Incorrect captcha answer.');
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	function nextStep() {
-		if (step === 1 && (!surname || !firstName)) return;
-		if (step === 2 && (!email || !phone)) return;
-		if (step === 3 && !nin) return;
-		if (step === 4 && (!state || !lga || !address)) return;
-		step++;
+		if (validateStep()) step++;
 	}
 
 	function prevStep() {
@@ -52,12 +170,11 @@
 	}
 
 	function submitForm() {
-		verifyCaptcha();
-		if (!captchaCorrect) return;
+		if (!validateStep()) return;
 		formSubmitted = true;
+		notifySuccess('✅ Form submitted successfully!');
 	}
 
-	// Load states
 	async function loadStates() {
 		stateLoading = true;
 		try {
@@ -105,6 +222,7 @@
 	}
 </script>
 
+
 <Navigation />
 
 <div class="mx-auto max-w-3xl px-4 py-10">
@@ -129,21 +247,24 @@
 				<div>
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 1: Personal Information</h2>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+						<div>
+							<input type="text" bind:value={surname} placeholder="Surname" class="input" />
+							{#if errors.surname}
+								<p class="mt-1 text-sm text-red-600">{errors.surname}</p>
+							{/if}
+						</div>
+						<div>
+							<input type="text" bind:value={firstName} placeholder="First Name" class="input" />
+							{#if errors.firstName}
+								<p class="mt-1 text-sm text-red-600">{errors.firstName}</p>
+							{/if}
+						</div>
 						<input
 							type="text"
-							bind:value={surname}
-							placeholder="Surname *"
-							required
+							bind:value={otherName}
+							placeholder="Other Name (Optional)"
 							class="input"
 						/>
-						<input
-							type="text"
-							bind:value={firstName}
-							placeholder="First Name *"
-							required
-							class="input"
-						/>
-						<input type="text" bind:value={otherName} placeholder="Other Name" class="input" />
 					</div>
 				</div>
 			{/if}
@@ -153,20 +274,26 @@
 				<div>
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 2: Contact Information</h2>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<input
-							type="email"
-							bind:value={email}
-							placeholder="Email Address *"
-							required
-							class="input"
-						/>
-						<input
-							type="tel"
-							bind:value={phone}
-							placeholder="Phone Number *"
-							required
-							class="input"
-						/>
+						<div>
+							<input type="email" bind:value={email} placeholder="e-Mail Address)" class="input" />
+							{#if errors.email}
+								<p class="mt-1 text-sm text-red-600">{errors.email}</p>
+							{/if}
+						</div>
+						<div>
+							<input
+								type="tel"
+								bind:value={phone}
+								maxlength="11"
+								minlength="11"
+								placeholder="e.g. 08012345678"
+								pattern="[0-9]{11}"
+								class="input"
+							/>
+							{#if errors.phone}
+								<p class="mt-1 text-sm text-red-600">{errors.phone}</p>
+							{/if}
+						</div>
 					</div>
 				</div>
 			{/if}
@@ -175,14 +302,20 @@
 			{#if step === 3}
 				<div>
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 3: Identification</h2>
-					<input
-						type="text"
-						bind:value={nin}
-						placeholder="National Identification Number (NIN) *"
-						required
-						maxlength="11"
-						class="input"
-					/>
+					<div>
+						<input
+							type="tel"
+							bind:value={nin}
+							maxlength="11"
+							minlength="11"
+							placeholder="National Identification Number (NIN)"
+							pattern="[0-9]{11}"
+							class="input"
+						/>
+						{#if errors.nin}
+							<p class="mt-1 text-sm text-red-600">{errors.nin}</p>
+						{/if}
+					</div>
 				</div>
 			{/if}
 
@@ -191,25 +324,40 @@
 				<div>
 					<h2 class="mb-4 text-xl font-semibold text-[#008751]">Step 4: Location & Verification</h2>
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<select bind:value={state} class="input" disabled={stateLoading}>
-							<option value="" disabled selected>Select State *</option>
-							{#each states as s}
-								<option value={s}>{s}</option>
-							{/each}
-						</select>
-						<select bind:value={lga} class="input" disabled={cityLoading || !cities.length}>
-							<option value="" disabled selected>Select LGA *</option>
-							{#each cities as c}
-								<option value={c}>{c}</option>
-							{/each}
-						</select>
+						<div>
+							<select bind:value={state} class="input" disabled={stateLoading}>
+								<option value="">Select State *</option>
+								{#each states as s}
+									<option value={s}>{s}</option>
+								{/each}
+							</select>
+							{#if errors.state}
+								<p class="mt-1 text-sm text-red-600">{errors.state}</p>
+							{/if}
+						</div>
+						<div>
+							<select bind:value={lga} class="input" disabled={cityLoading || !cities.length}>
+								<option value="">Select LGA *</option>
+								{#each cities as c}
+									<option value={c}>{c}</option>
+								{/each}
+							</select>
+							{#if errors.lga}
+								<p class="mt-1 text-sm text-red-600">{errors.lga}</p>
+							{/if}
+						</div>
 					</div>
-					<textarea
-						bind:value={address}
-						placeholder="Full Address *"
-						required
-						class="input mt-4 min-h-[100px] w-full"
-					></textarea>
+
+					<div class="mt-4">
+						<textarea
+							bind:value={address}
+							placeholder="Full Address *"
+							class="input min-h-[100px] w-full"
+						></textarea>
+						{#if errors.address}
+							<p class="mt-1 text-sm text-red-600">{errors.address}</p>
+						{/if}
+					</div>
 
 					<!-- Captcha -->
 					<div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
@@ -223,12 +371,10 @@
 							bind:value={captchaAnswer}
 							placeholder="?"
 							class="input w-24"
-							required
 						/>
 					</div>
-
-					{#if captchaAnswer && !captchaCorrect}
-						<p class="mt-1 text-sm text-red-600">Incorrect captcha answer. Please try again.</p>
+					{#if errors.captcha}
+						<p class="mt-1 text-sm text-red-600">{errors.captcha}</p>
 					{/if}
 				</div>
 			{/if}
@@ -236,20 +382,25 @@
 			<!-- Navigation Buttons -->
 			<div class="flex justify-between pt-6">
 				{#if step > 1}
-					<button type="button" on:click={prevStep} class="text-[#008751] hover:underline"
-						>← Back</button
-					>
+					<button type="button" on:click={prevStep} class="text-[#008751] hover:underline">
+						← Back
+					</button>
 				{/if}
 				{#if step < 4}
 					<button
 						type="button"
 						on:click={nextStep}
-						class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]">Next →</button
+						class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
 					>
+						Next →
+					</button>
 				{:else}
-					<button type="submit" class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
-						>Submit</button
+					<button
+						type="submit"
+						class="rounded bg-[#008751] px-6 py-2 text-white hover:bg-[#006f42]"
 					>
+						Submit
+					</button>
 				{/if}
 			</div>
 		</form>

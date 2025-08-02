@@ -8,7 +8,7 @@
 		<div class="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
 			<!-- Close Button -->
 			<button
-				class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-xl"
+				class="absolute top-3 right-3 text-xl text-gray-500 hover:text-red-500"
 				on:click={onClose}
 				aria-label="Close modal"
 			>
@@ -22,12 +22,14 @@
 			</p>
 
 			<div class="mt-4 flex justify-end">
-				<button
+				<a
+					href="/agent/enroll"
 					class="rounded-md bg-[#008751] px-4 py-2 text-white transition hover:bg-[#006f42]"
+					data-sveltekit-preload-data
 					on:click={onClose}
 				>
 					Start Onboarding
-				</button>
+				</a>
 			</div>
 		</div>
 	</div>

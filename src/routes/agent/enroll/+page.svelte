@@ -3,8 +3,8 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
 	import { notifySuccess, notifyError } from '$lib/store/notification';
-	import SliderCaptcha from '$lib/components/Forms/SliderCapt.svelte';
-	import PuzzleCaptcha from '$lib/components/Forms/PuzzleCapt.svelte';
+	import SliderCaptcha from '$lib/components/Forms/SliderCaptcha.svelte';
+	import PuzzleCaptcha from '$lib/components/Forms/PuzzleCaptcha.svelte';
 
 	let step = 1;
 	let formSubmitted = false;

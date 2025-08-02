@@ -4,7 +4,7 @@
 
 <section class="bg-white px-6 py-20 select-none">
 	<div class="mx-auto max-w-6xl text-center">
-		<h2 class="text-3xl font-bold tracking-tight text-green-900 sm:text-4xl">
+		<h2 class="text-3xl font-bold tracking-tight text-green-800sm:text-4xl">
 			Jubilee Care & NIMC Impact
 		</h2>
 		<p class="mx-auto mt-3 max-w-2xl text-base text-gray-600 sm:text-lg">

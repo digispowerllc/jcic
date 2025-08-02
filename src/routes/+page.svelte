@@ -5,9 +5,10 @@
 	import CoreServices from '$lib/components/C_CoreServices.svelte';
 	import Testimonials from '$lib/components/D_Testimonials.svelte';
 	import ImpactSection from '$lib/components/G_ImpactSection.svelte';
-	import AboutUs from '$lib/components/E_AboutUs.svelte';
+	import VisualInsight from '$lib/components/H_VisualInsight.svelte';
+	import AboutUs from '$lib/components/I_AboutUs.svelte';
 	import SocialHandles from '$lib/components/F_SocialHandles.svelte';
-	import Footer from '$lib/components/Footer.svelte';
+	import Footer from '$lib/components/Z_Footer.svelte';
 
 	import AgentEnrollmentModal from '$lib/components/Agents/AgentEnrollmentModal.svelte';
 	let showModal = true; // or trigger based on condition
@@ -34,6 +35,9 @@
 
 <!-- Testimonials Section -->
 <Testimonials />
+
+<!-- Visual Insight Section -->
+<VisualInsight />
 
 <!-- About Section -->
 <AboutUs />

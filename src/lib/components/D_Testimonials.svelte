@@ -46,7 +46,7 @@
 
 <section class="overflow-hidden bg-gray-50 px-4 py-16 select-none sm:px-6 lg:px-8">
 	<div class="mx-auto max-w-6xl text-center">
-		<h2 class="text-2xl font-bold text-gray-900">What Our Partners Say</h2>
+		<h2 class="text-2xl font-bold text-green-800">What the citizens say</h2>
 		<p class="mx-auto mt-2 max-w-xl text-gray-600">
 			Real stories from people impacted by Jubilee Care’s ICT initiatives.
 		</p>

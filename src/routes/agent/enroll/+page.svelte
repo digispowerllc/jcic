@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Navigation from '$lib/components/A_Navigation.svelte';
-	import Footer from '$lib/components/Footer.svelte';
+	import Footer from '$lib/components/Z_Footer.svelte';
 	import { onMount } from 'svelte';
 	import { notifySuccess, notifyError } from '$lib/store/notification';
 

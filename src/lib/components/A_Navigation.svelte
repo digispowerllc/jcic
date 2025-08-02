@@ -6,17 +6,17 @@
 	<div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
 		<a href="/" class="text-2xl font-bold text-green-800 hover:underline"> Jubilee Care ICT </a>
 		<div class="hidden space-x-8 md:flex">
-			<a href="#about" class="font-medium hover:text-green-800">About</a>
-			<a href="#services" class="font-medium hover:text-green-800">Services</a>
-			<a href="#projects" class="font-medium hover:text-green-800">Projects</a>
-			<a href="#contact" class="font-medium hover:text-green-800">Contact</a>
+			<a href="#about" class="font-medium hover:text-green-700">About</a>
+			<a href="#services" class="font-medium hover:text-green-700">Services</a>
+			<a href="#projects" class="font-medium hover:text-green-700">Projects</a>
+			<a href="#contact" class="font-medium hover:text-green-700">Contact</a>
 		</div>
 		<button
 			class="md:hidden"
 			on:click={() => (navOpen = !navOpen)}
 			aria-label="Toggle navigation menu"
 		>
-			<svg class="h-6 w-6 text-green-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<svg class="h-6 w-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
 					stroke-linecap="round"
 					stroke-linejoin="round"
@@ -28,10 +28,10 @@
 	</div>
 	{#if navOpen}
 		<div class="space-y-2 px-4 pb-4 md:hidden">
-			<a href="#about" class="block text-green-800">About</a>
-			<a href="#services" class="block text-green-800">Services</a>
-			<a href="#projects" class="block text-green-800">Projects</a>
-			<a href="#contact" class="block text-green-800">Contact</a>
+			<a href="#about" class="block text-green-700">About</a>
+			<a href="#services" class="block text-green-700">Services</a>
+			<a href="#projects" class="block text-green-700">Projects</a>
+			<a href="#contact" class="block text-green-700">Contact</a>
 		</div>
 	{/if}
 </nav>

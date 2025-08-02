@@ -41,7 +41,7 @@
 				<div>
 					<h4 class="text-lg font-semibold text-gray-800">Phone</h4>
 					<p class="text-gray-600">
-						<a href="tel:+2348000000000" class="hover:text-green-700">+234 800 000 0000</a>
+						<a href="tel:+2347039792389" class="hover:text-green-700">+234 703 979 2389</a>
 					</p>
 				</div>
 
@@ -54,7 +54,7 @@
 							rel="noopener noreferrer"
 							class="hover:text-green-700"
 						>
-							Nigeria
+							Umuahia, Abia State, Nigeria
 						</a>
 					</p>
 				</div>

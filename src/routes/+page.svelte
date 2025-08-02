@@ -36,10 +36,10 @@
 <section class="bg-white py-20 text-center">
   <div class="max-w-3xl mx-auto px-6">
     <h2 class="text-4xl md:text-5xl font-bold text-blue-900 leading-tight">
-      Empowering ICT Excellence Through Innovation
+      Official NIMC Front-End Partner – Delivering Secure Identity Services Nationwide.
     </h2>
     <p class="mt-6 text-lg text-gray-700">
-      Jubilee Care ICT Innovative Consult is committed to advancing digital literacy, offering premium training, and delivering innovative technology solutions across Nigeria.
+      Jubilee Care ICT Innovative Consult is committed to advancing digital identity, ICT literacy, and delivering secure biometric and data solutions across Nigeria.
     </p>
     <div class="mt-8">
       <a href="#contact" class="bg-blue-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-800 transition">
@@ -53,9 +53,41 @@
   <div class="max-w-5xl mx-auto px-6 text-center">
     <h3 class="text-3xl font-semibold text-blue-800 mb-4">Who We Are</h3>
     <p class="text-gray-700">
-      Jubilee Care ICT Innovative Consult is a forward-thinking ICT firm dedicated to training, mentoring, and equipping individuals and organizations with cutting-edge digital skills and tools. Our goal is to build tech talent and foster innovation in underserved communities.
+      Jubilee Care ICT Innovative Consult is a forward-thinking ICT and digital identity firm, officially recognized as a NIMC Front-End Partner (FEP). We specialize in secure NIN enrollment, verification, and modification services, while also offering premium tech training and digital transformation solutions to communities and institutions.
     </p>
   </div>
 </section>
 
-<!-- Additional sections to follow: Services, Projects, Testimonials, Contact, Footer -->
+<section id="services" class="py-16 bg-white">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h3 class="text-3xl font-semibold text-blue-800 mb-10">Our Core Services</h3>
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div class="p-6 border rounded-lg shadow-sm">
+        <h4 class="text-xl font-bold text-blue-700 mb-2">NIN Enrollment</h4>
+        <p class="text-gray-600">As an accredited NIMC FEP, we facilitate National Identification Number (NIN) registration for citizens and residents across Nigeria.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow-sm">
+        <h4 class="text-xl font-bold text-blue-700 mb-2">NIN Modification & Validation</h4>
+        <p class="text-gray-600">We help you correct, update, and validate your NIN data securely and efficiently.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow-sm">
+        <h4 class="text-xl font-bold text-blue-700 mb-2">ICT Training & Certification</h4>
+        <p class="text-gray-600">Equipping individuals with in-demand ICT skills through professional training programs and certifications.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow-sm">
+        <h4 class="text-xl font-bold text-blue-700 mb-2">Biometric & Identity Solutions</h4>
+        <p class="text-gray-600">We provide innovative biometric capture and authentication services for both government and private institutions.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow-sm">
+        <h4 class="text-xl font-bold text-blue-700 mb-2">NIN Slip Printing</h4>
+        <p class="text-gray-600">Reprint your NIN slips conveniently through our authorized FEP centers or via secure portals.</p>
+      </div>
+      <div class="p-6 border rounded-lg shadow-sm">
+        <h4 class="text-xl font-bold text-blue-700 mb-2">Consultancy & ICT Infrastructure</h4>
+        <p class="text-gray-600">We consult, build, and maintain ICT systems for educational institutions, NGOs, and businesses.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Additional sections to follow: Projects, Testimonials, Contact, Footer -->

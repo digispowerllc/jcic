@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.ico';
 	import Footer from '$lib/components/Z_Footer.svelte';
 	import Notifications from '$lib/components/Global/Notification.svelte';
 

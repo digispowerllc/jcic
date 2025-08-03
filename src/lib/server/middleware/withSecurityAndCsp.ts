@@ -80,7 +80,7 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 		'object-src': `'none'`,
 		'base-uri': `'self'`,
 		'manifest-src': `'self'`,
-		'media-src': `'self' data: blob:'`,
+		'media-src': `'self' https://*.cloudinary.com data: blob: `,
 		'worker-src': `${workerSrc} data: blob:`,
 		'report-uri': `https://6852139b53f4dfa48b21aa00.endpoint.csper.io?builder=true&v=2`
 	};

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Navigation from '$lib/components/A_Navigation.svelte';
-	import Footer from '$lib/components/Z_Footer.svelte';
 
 	let name = '';
 	let email = '';
@@ -110,5 +109,3 @@
 		</div>
 	</div>
 </section>
-
-<Footer />

@@ -50,7 +50,14 @@ function getClientIdentifier(event: RequestEvent) {
 	const normalizedIp = allowedOrigins.has(ip) ? `${ip}:${port || '{PORT}'}` : rawIp;
 
 	// 👤 Identify user or fallback to IP
-	if (event.locals?.user?.id) return `user:${event.locals.user.id}`;
+	if (
+		event.locals?.user &&
+		typeof event.locals.user === 'object' &&
+		'id' in event.locals.user
+	) {
+		// @ts-expect-error: user is assumed to have an id property
+		return `user:${event.locals.user.id}`;
+	}
 	return `ip:${normalizedIp}`;
 }
 function getLimitForRoute(pathname: string): number {

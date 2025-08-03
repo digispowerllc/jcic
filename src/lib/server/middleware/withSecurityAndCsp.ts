@@ -16,6 +16,7 @@ function isDevHost(hostname: string): boolean {
 
 export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 	const hostname = event.url.hostname;
+	const protocol = event.url.protocol;
 	const isDevEnv = import.meta.env.DEV;
 	const isDevHostMatch = isDevHost(hostname);
 
@@ -23,7 +24,7 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 	const nonce = crypto.randomBytes(32).toString('base64url');
 	event.locals.nonce = nonce;
 
-	const localOrigin = 'localhost';
+	const localOrigin = isDevHostMatch ? `https://${hostname}` : undefined;
 
 	const routeOverrides: Record<string, Partial<Record<string, string>>> = {
 		'/map-page': {
@@ -36,7 +37,6 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 		'/admin': {
 			'script-src': `'self' 'nonce-{nonce}'`
 		}
-		// add more paths here
 	};
 
 	// ✅ MapLibre CDN
@@ -48,27 +48,24 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 	const fontDomains = ['https://*.googleapis.com', 'https://*.gstatic.com', 'https://fonts.googleapis.com'];
 	const styleDomains = ["'self'", fontDomains[0], "'unsafe-inline'", maplibreStyle];
 
-	// ✅ Image sources (MapLibre tiles, avatars, etc.)
+	// ✅ Image sources
 	const imageDomains = [
 		'https://*.website-files.com',
 		'https://ui-avatars.com',
-		'https://api.maptiler.com https://*.maplibre.org https://us1.locationiq.com', 'https://*.cloudinary.com'
+		'https://api.maptiler.com https://*.maplibre.org https://us1.locationiq.com',
+		'https://*.cloudinary.com'
 	];
 
-	// ✅ Connect sources
 	const connectDomains = `'self' https://api.maptiler.com https://*.maplibre.org https://*.locationiq.com https://*.onrender.com https://*.vercel.app`;
 
-	// ✅ Script sources
 	const scriptDomains = isDevEnv
 		? `'self' 'unsafe-inline' ${maplibreScript}`
 		: `'report-sample' 'self' 'nonce-${nonce}' ${maplibreScript}`;
 
-	// ✅ Style sources
 	const styleSrc = isDevEnv
 		? styleDomains.join(' ')
 		: `'report-sample' 'self' ${styleDomains.slice(1).join(' ')}`;
 
-	// ✅ worker sources
 	const workerSrc = isDevEnv ? `'self' blob:` : `'self'`;
 
 	// ✅ Construct Content Security Policy
@@ -83,7 +80,7 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 		'object-src': `'none'`,
 		'base-uri': `'self'`,
 		'manifest-src': `'self'`,
-		'media-src': `'self' data: blob:`,
+		'media-src': `'self' data: blob:'`,
 		'worker-src': `${workerSrc} data: blob:`,
 		'report-uri': `https://6852139b53f4dfa48b21aa00.endpoint.csper.io?builder=true&v=2`
 	};
@@ -97,7 +94,6 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 
 	const csp = Object.entries(baseCsp).map(([k, v]) => `${k} ${v}`);
 
-	// ✅ Inject CSP + headers
 	const response = await resolve(event, {
 		filterSerializedResponseHeaders: (name) =>
 			['permissions-policy', 'content-security-policy'].includes(name.toLowerCase()),
@@ -108,8 +104,14 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 	response.headers.set('X-Frame-Options', 'DENY');
 	response.headers.set('X-Content-Type-Options', 'nosniff');
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-	response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
-	response.headers.set('Cross-Origin-Resource-Policy', 'same-origin');
+
+	// ✅ Only set COOP/COEP if origin is trustworthy
+	const isTrustworthy = (protocol === 'https:') || hostname === 'localhost';
+	if (isTrustworthy) {
+		response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+		response.headers.set('Cross-Origin-Resource-Policy', 'same-origin');
+	}
+
 	response.headers.set('X-XSS-Protection', '1; mode=block');
 	response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
 
@@ -118,7 +120,7 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 	const prodPermissions = 'geolocation=(self), camera=(self), microphone=(self)';
 	response.headers.set('Permissions-Policy', isDevEnv ? devPermissions : prodPermissions);
 
-	// ✅ Final CSP
+	// ✅ Final CSP header
 	response.headers.set('Content-Security-Policy', csp.join('; '));
 
 	console.log(

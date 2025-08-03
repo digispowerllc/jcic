@@ -4,26 +4,8 @@ import micromatch from 'micromatch';
 
 const PUBLIC_ROUTES = [
 	'/',
-	'/login',
-	'/login/**',
 	'/agent',
-	'/agent/**',
-	'/block-status',
-	'/block-status/**',
-	'/unauthorized',
-	'/dashboard',
-	'/dashboard/**',
-	'/api/**',
-	'/reports/',
-	'/reports/**',
-	'/ai-reset',
-	'/ai-reset/**',
-	'/auth',
-	'/auth/**',
-	'/map',
-	'/map/**',
-	'/ai',
-	'/ai/**'
+	'/agent/**'
 ];
 
 export const withPermission: Handle = async ({ event, resolve }) => {
@@ -36,7 +18,7 @@ export const withPermission: Handle = async ({ event, resolve }) => {
 	}
 
 	// Extend the user type to include 'role'
-	const user = event.locals.user as { id: string; username: string; role?: string };
+	const user = event.locals.user as unknown as { id: string; username: string; role?: string };
 
 	// 👤 Block unauthenticated access on navigation requests only
 	if (!user && !event.url.pathname.startsWith('/api')) {

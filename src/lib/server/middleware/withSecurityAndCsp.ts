@@ -23,7 +23,7 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 	const nonce = crypto.randomBytes(32).toString('base64url');
 	event.locals.nonce = nonce;
 
-	const localOrigin = 'https://192.168.0.159:5173';
+	const localOrigin = 'localhost';
 
 	const routeOverrides: Record<string, Partial<Record<string, string>>> = {
 		'/map-page': {

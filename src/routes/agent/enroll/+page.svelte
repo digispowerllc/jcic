@@ -41,25 +41,36 @@
 	let previousState = '';
 	const lgaCache = new Map<string, string[]>();
 
-	function handleBlur(event: FocusEvent) {
-		const input = event.target as HTMLInputElement | HTMLTextAreaElement;
-		let val = input.value;
-		if (val.trim() === '') return;
-		const trimmed = val.trim();
-		if (/\s/.test(trimmed.slice(1, -1))) {
-			input.value = val; // invalid due to inner space, restore original
-		} else {
-			input.value = trimmed;
+	const onlyLetters = /^[A-Za-z]+$/;
+	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	const phonePattern = /^\d{10,15}$/;
+	const ninPattern = /^\d{11}$/;
+
+	function validateEmail(email: string): boolean {
+		if (!agentData.email) {
+			notifyError('Email is required.');
+			return false;
 		}
+
+		// Trim leading/trailing spaces first
+		const trimmed = agentData.email.trim();
+
+		// No whitespace anywhere inside
+		if (/\s/.test(trimmed)) {
+			notifyError('Email must not contain any space characters.');
+			return false;
+		}
+
+		if (!emailRegex.test(trimmed)) {
+			notifyError('Invalid email format.');
+			return false;
+		}
+
+		return true;
 	}
 
 	function validateStep(): boolean {
 		errors = {};
-
-		const onlyLetters = /^[A-Za-z]+$/;
-		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		const phonePattern = /^\d{10,15}$/;
-		const ninPattern = /^\d{11}$/;
 
 		function hasInternalWhitespace(str: string): boolean {
 			const trimmed = str.trim();
@@ -113,10 +124,15 @@
 			agentData.email = agentData.email.trim();
 			agentData.phone = agentData.phone.trim();
 
+			if (!validateEmail(agentData.email)) {
+				notifyError('Invalid email format.');
+				return false;
+			}
+
 			if (!agentData.email) {
 				notifyError('Email is required.');
 				return false;
-			} else if (!emailPattern.test(agentData.email)) {
+			} else if (!emailRegex.test(agentData.email)) {
 				notifyError('Invalid email format.');
 				return false;
 			} else if (hasInternalWhitespace(agentData.email)) {

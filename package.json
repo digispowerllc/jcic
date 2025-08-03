@@ -28,6 +28,7 @@
 		"@tailwindcss/forms": "^0.5.9",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/micromatch": "^4.0.9",
 		"@types/node": "^22",
 		"@vitest/browser": "^3.2.3",
 		"drizzle-kit": "^0.30.2",
@@ -52,9 +53,11 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"@types/pg": "^8.15.5",
+		"cloudinary": "^2.7.0",
 		"drizzle-orm": "^0.40.0",
 		"pg": "^8.16.3",
 		"postgres": "^3.4.5",
-		"swiper": "^11.2.10"
+		"swiper": "^11.2.10",
+		"zod": "^4.0.14"
 	}
 }

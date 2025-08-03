@@ -7,6 +7,11 @@
 	let step = 1;
 	let formSubmitted = false;
 
+	// CSRF token from server
+	export let data: {
+		csrfToken: string;
+	};
+
 	let agentData = {
 		surname: '',
 		firstName: '',
@@ -56,19 +61,29 @@
 
 	async function checkEmail(): Promise<boolean> {
 		try {
-			const res = await fetch(
-				`https://apinigeria.vercel.app/api/checkemail?email=${encodeURIComponent(agentData.email)}`
-			);
+			// Call your local proxy API, NOT the external URL
+			const res = await fetch(`/api/checkemail?email=${encodeURIComponent(agentData.email)}`);
+
+			if (!res.ok) {
+				console.error('API returned error status:', res.status);
+				notifyError('Failed to verify email. API error.');
+				return false;
+			}
+
 			const result = await res.json();
+			console.log('Email check API response:', result);
+
 			if (result.disposable) {
 				notifyError('Disposable email detected. Please use a valid email.');
 				return false;
 			}
-		} catch {
+
+			return true; // Only return true here if all checks pass
+		} catch (error) {
+			console.error('Fetch error:', error);
 			notifyError('Failed to verify email.');
 			return false;
 		}
-		return true;
 	}
 
 	function validateStep(): boolean {
@@ -209,28 +224,34 @@
 		if (!(await validateBeforeNext())) return;
 
 		formSubmitted = true;
-
 		try {
-			const response = await fetch('/agent/enroll', {
+			const res = await fetch('/agent/enroll', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-Token': data.csrfToken
+				},
 				body: JSON.stringify(agentData)
 			});
 
-			const result = await response.json();
+			const result = await res.json();
 
-			if (!response.ok) {
+			if (res.status === 409) {
+				notifyError(result.message || 'e-Mail address, Phone or NIN already exists.');
+				return;
+			}
+
+			if (!res.ok) {
 				notifyError(result?.error || 'Unknown error occurred.');
 				return;
 			}
 
 			notifySuccess('Agent onboarded successfully!');
 			agentData = { ...initialData };
-			window.location.reload();
+			step = 1;
 		} catch (error) {
 			console.error('Submission failed:', error);
-			const message = error instanceof Error ? error.message : String(error);
-			notifyError(`❌ ${message}`);
+			notifyError('❌ Submission failed');
 		} finally {
 			formSubmitted = false;
 		}

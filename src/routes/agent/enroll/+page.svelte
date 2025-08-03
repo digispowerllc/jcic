@@ -19,17 +19,8 @@
 		address: ''
 	};
 
-	const initialData = {
-		surname: '',
-		firstName: '',
-		otherName: '',
-		email: '',
-		phone: '',
-		nin: '',
-		state: '',
-		lga: '',
-		address: ''
-	};
+	const initialData = { ...agentData };
+
 	// Validation errors
 	let errors: Record<string, string> = {};
 
@@ -47,38 +38,37 @@
 	const ninPattern = /^\d{11}$/;
 
 	function validateEmail(email: string): boolean {
-		if (!agentData.email) {
+		const trimmed = email.trim();
+		if (!trimmed) {
 			notifyError('Email is required.');
 			return false;
 		}
-
-		// Trim leading/trailing spaces first
-		const trimmed = agentData.email.trim();
-
-		// No whitespace anywhere inside
 		if (/\s/.test(trimmed)) {
 			notifyError('Email must not contain any space characters.');
 			return false;
 		}
-
 		if (!emailRegex.test(trimmed)) {
 			notifyError('Invalid email format.');
 			return false;
 		}
-
 		return true;
 	}
 
-	async function checkEmail() {
-		const res = await fetch(
-			`https://apinigeria.vercel.app/api/checkemail?email=${encodeURIComponent(agentData.email)}`
-		);
-		const result = await res.json();
-
-		if (result.disposable) {
-			notifyError('Disposable email detected. Please use a valid email.');
+	async function checkEmail(): Promise<boolean> {
+		try {
+			const res = await fetch(
+				`https://apinigeria.vercel.app/api/checkemail?email=${encodeURIComponent(agentData.email)}`
+			);
+			const result = await res.json();
+			if (result.disposable) {
+				notifyError('Disposable email detected. Please use a valid email.');
+				return false;
+			}
+		} catch {
+			notifyError('Failed to verify email.');
 			return false;
 		}
+		return true;
 	}
 
 	function validateStep(): boolean {
@@ -115,20 +105,18 @@
 				notifyError('First name must not contain spaces between characters.');
 				return false;
 			}
+
 			if (agentData.otherName) {
 				const trimmed = agentData.otherName.trim();
-
 				if (!onlyLetters.test(trimmed)) {
 					notifyError('Other name must contain only letters.');
 					return false;
 				}
-
 				if (hasInternalWhitespace(trimmed)) {
 					notifyError('Other name must not contain spaces between characters.');
 					return false;
 				}
-
-				agentData.otherName = trimmed; // optional, to clean the value
+				agentData.otherName = trimmed;
 			}
 		}
 
@@ -136,23 +124,7 @@
 			agentData.email = agentData.email.trim();
 			agentData.phone = agentData.phone.trim();
 
-			if (!validateEmail(agentData.email)) {
-				notifyError('Invalid email format.');
-				return false;
-			}
-
-			if (!agentData.email) {
-				notifyError('Email is required.');
-				return false;
-			} else if (!emailRegex.test(agentData.email)) {
-				notifyError('Invalid email format.');
-				return false;
-			} else if (hasInternalWhitespace(agentData.email)) {
-				notifyError('Email must not contain spaces between characters.');
-				return false;
-			}
-
-			checkEmail();
+			if (!validateEmail(agentData.email)) return false;
 
 			if (!agentData.phone) {
 				notifyError('Phone number is required.');
@@ -160,8 +132,8 @@
 			} else if (!phonePattern.test(agentData.phone)) {
 				notifyError('Phone must be 10–15 digits.');
 				return false;
-			} else if (hasInternalWhitespace(agentData.phone)) {
-				notifyError('Phone number must not contain spaces between characters.');
+			} else if (/\s/.test(agentData.phone)) {
+				notifyError('Phone number must not contain spaces.');
 				return false;
 			}
 		}
@@ -175,8 +147,8 @@
 			} else if (!ninPattern.test(agentData.nin)) {
 				notifyError('NIN must be exactly 11 digits.');
 				return false;
-			} else if (hasInternalWhitespace(agentData.nin)) {
-				notifyError('NIN must not contain spaces between characters.');
+			} else if (/\s/.test(agentData.nin)) {
+				notifyError('NIN must not contain spaces.');
 				return false;
 			}
 		}
@@ -196,13 +168,11 @@
 				notifyError('Address is required.');
 				return false;
 			}
-
 			if (/[^a-zA-Z0-9\s,.\-\/#]/.test(agentData.address)) {
 				notifyError('Address must not contain special characters.');
 				return false;
 			}
-			if (agentData.address.length < 10 && agentData.address.length > 0) {
-				// Only check length if address is not empty
+			if (agentData.address.length < 10) {
 				notifyError('Address must be at least 10 characters long.');
 				return false;
 			}
@@ -211,11 +181,24 @@
 				return false;
 			}
 		}
+
 		return true;
 	}
 
-	function nextStep() {
-		if (validateStep()) step++;
+	async function nextStep() {
+		if (await validateBeforeNext()) {
+			step++;
+		}
+	}
+
+	async function validateBeforeNext(): Promise<boolean> {
+		if (!validateStep()) return false;
+		// run disposable email check only on step 2
+		if (step === 2) {
+			const ok = await checkEmail();
+			if (!ok) return false;
+		}
+		return true;
 	}
 
 	function prevStep() {
@@ -223,7 +206,7 @@
 	}
 
 	async function submitForm() {
-		if (!validateStep()) return;
+		if (!(await validateBeforeNext())) return;
 
 		formSubmitted = true;
 
@@ -238,12 +221,11 @@
 
 			if (!response.ok) {
 				notifyError(result?.error || 'Unknown error occurred.');
+				return;
 			}
 
 			notifySuccess('Agent onboarded successfully!');
-			// Optional: Reset form or redirect
-			agentData = { ...initialData }; // if you defined initialData
-			// goto('/dashboard'); // or any other route
+			agentData = { ...initialData };
 			window.location.reload();
 		} catch (error) {
 			console.error('Submission failed:', error);

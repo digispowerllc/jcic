@@ -69,6 +69,18 @@
 		return true;
 	}
 
+	async function checkEmail() {
+		const res = await fetch(
+			`https://apinigeria.vercel.app/api/checkemail?email=${encodeURIComponent(agentData.email)}`
+		);
+		const result = await res.json();
+
+		if (result.disposable) {
+			notifyError('Disposable email detected. Please use a valid email.');
+			return false;
+		}
+	}
+
 	function validateStep(): boolean {
 		errors = {};
 
@@ -139,6 +151,8 @@
 				notifyError('Email must not contain spaces between characters.');
 				return false;
 			}
+
+			checkEmail();
 
 			if (!agentData.phone) {
 				notifyError('Phone number is required.');

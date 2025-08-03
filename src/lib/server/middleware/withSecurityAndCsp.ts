@@ -68,6 +68,10 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 
 	const workerSrc = isDevEnv ? `'self' blob:` : `'self'`;
 
+	const mediaSrc = isDevEnv
+		? `'self' https://*.cloudinary.com data: blob:`
+		: `'self' https://*.cloudinary.com data: blob:`;
+
 	// ✅ Construct Content Security Policy
 	const baseCsp: Record<string, string> = {
 		'default-src': `'self'`,
@@ -80,7 +84,7 @@ export const withSecurityAndCsp: Handle = async ({ event, resolve }) => {
 		'object-src': `'none'`,
 		'base-uri': `'self'`,
 		'manifest-src': `'self'`,
-		'media-src': `'self' https://*.cloudinary.com data: blob: `,
+		'media-src': mediaSrc,
 		'worker-src': `${workerSrc} data: blob:`,
 		'report-uri': `https://6852139b53f4dfa48b21aa00.endpoint.csper.io?builder=true&v=2`
 	};
